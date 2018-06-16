@@ -6,22 +6,67 @@ using System.Threading.Tasks;
 
 namespace PracticeEx7
 {
+    public class Tree
+    {
+        public double data;
+        public Tree left, right;
+        public override string ToString()
+        {
+            return data.ToString();
+        }
+        public Tree(double value)
+        {
+            data = value;
+            left = null;
+            right = null;
+        }
+        public static Tree MakeAPoint(double value)
+        {
+            Tree nPoint = new Tree(value);
+            return nPoint;
+        }
+        public static int GetSize(int length)
+        {
+            int size = length + (length - 1);
+            return size;
+        }
+        public static CreateATree(double head, double[][] arr)
+        {
+            Tree root = MakeAPoint(head);
+            for (int j = arr.Length - 2; j > -1; j--)
+            {
+                for (int i = arr[j].Length - 1; i > arr[j].Length - 3; i--)
+                {
+
+                }
+            }
+
+        }
+        public void ShowTree(int indent)
+        {
+            if (left != null)
+                left.ShowTree(indent + 3);
+            Console.WriteLine(new string(' ', indent) + ToString());
+            if (right != null)
+                right.ShowTree(indent + 3);
+        }
+    }
     class Program
     {
         static double[][] ArraySort(double[][] arr)
         {
-            for (int i = 0; i < arr.Length; i++)
+            for (int j = 0; j < arr.Length; j++)
             {
-                for (int j = 0; j < arr[i].Length; j++)
+                for (int i = 0; i < arr[j].Length; i++)
                 {
                     double temp;
-                    for (int k = j + 1; k < arr[i].Length; k++)
+                    for (int k = i + 1; k < arr[j].Length; k++)
                     {
-                        if (arr[i][j] < arr[i][k])
+                        if (arr[i][j] < arr[k][j])
                         {
                             temp = arr[i][j];
-                            arr[i][j] = arr[i][k];
-                            arr[i][k] = temp;
+                            arr[i][j] = arr[k][j];
+                            arr[k][j] = temp;
                         }
                     }
                 }
@@ -37,10 +82,6 @@ namespace PracticeEx7
                     Console.Write("{0, 7}", arr[i][j]);
                 Console.Write("\n");
             }
-        }
-        static void CreateTree(double[] arr)
-        {
-
         }
         static double ScanDouble()
         {
@@ -94,8 +135,8 @@ namespace PracticeEx7
                 for (int i = 0; i < N; i++)
                 {
                     double freq = ScanDouble();
-                    arr[0][i] = freq;
-                    summ += arr[0][i];
+                    arr[i][0] = freq;
+                    summ += arr[i][0];
                 }
                 if (summ == 1)
                 {
@@ -109,16 +150,18 @@ namespace PracticeEx7
                 }
             } while (!flag);
             ArraySort(arr);
-            for (int i = 1; i < arr.Length; i++)
+            for (int j = 1; j < arr.Length; j++)
             {
-                for (int j = 0; j < arr[i].Length; j++)
+                for (int i = 0; i < arr[j].Length; i++)
                 {
-                    arr[i][j] = arr[i - 1][j];
-                    arr[i][arr[i].Length - 1] = arr[i - 1][arr[i-1].Length - 1] + arr[i - 1][arr[i-1].Length - 2];
+                    arr[i][j] = arr[i][j-1];
+                    arr[arr[j].Length - 1][j] = arr[i + 1][j - 1] + arr[i][j - 1];
                 }
                 ArraySort(arr);
             }
+            Console.WriteLine("Таблица для построения дерева: ");
             ShowArr(arr);
+
         }
     }
 }
