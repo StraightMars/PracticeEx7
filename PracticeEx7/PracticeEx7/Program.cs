@@ -8,27 +8,34 @@ namespace PracticeEx7
 {
     class Program
     {
-        static double[] ArraySort(double[] arr)
+        static double[][] ArraySort(double[][] arr)
         {
-            Array.Sort(arr);
+            for (int i = 0; i < arr.Length; i++)
+            {
+                for (int j = 0; j < arr[i].Length; j++)
+                {
+                    double temp;
+                    for (int k = j + 1; k < arr[i].Length; k++)
+                    {
+                        if (arr[i][j] < arr[i][k])
+                        {
+                            temp = arr[i][j];
+                            arr[i][j] = arr[i][k];
+                            arr[i][k] = temp;
+                        }
+                    }
+                }
+            }
             return arr;
         }
-        static void CreatingArrays(double[] arr, double[] temp)
-        {
-            Array.Resize(ref temp, temp.Length - 1);
-            temp[0] = arr[0] + arr[1];
-            for (int i = 1; i < temp.Length; i++)
-            {
-                temp[i] = arr[i + 1];
-            }
-            ShowArr(temp);
-        }
-        static void ShowArr(double[] arr)
+        static void ShowArr(double[][] arr)
         {
             Console.WriteLine("Указанные частоты: ");
             for (int i = 0; i < arr.Length; i++)
             {
-                Console.WriteLine("{0}: {1}", i + 1, arr[i]);
+                for (int j = 0; j < arr[i].Length; j++)
+                    Console.Write("{0, 7}", arr[i][j]);
+                Console.Write("\n");
             }
         }
         static void CreateTree(double[] arr)
@@ -47,6 +54,11 @@ namespace PracticeEx7
                 if (buf <= 0)
                 {
                     Console.WriteLine("Ошибка! Введите действительное число большее 0!");
+                    ok = false;
+                }
+                if (buf > 1)
+                {
+                    Console.WriteLine("Частота - величина, в диапазоне от нуля до единицы! Повторите ввод.");
                     ok = false;
                 }
             } while (!ok);
@@ -69,22 +81,26 @@ namespace PracticeEx7
                     ok = false;
                 }
             } while (!ok);
-            double[] arr = new double[N];
-            double[] temp = new double[N];
+            double[][] arr = new double[N][];
+            for (int i = 0; i < N; i++)
+            {
+                int columns = N - i;
+                arr[i] = new double[columns];
+            }
             do
             {
                 Console.WriteLine("Введите частоты букв по порядку, через Enter: ");
                 double summ = 0;
                 for (int i = 0; i < N; i++)
                 {
-                    double prob = ScanDouble();
-                    arr[i] = prob;
-                    summ += arr[i];
+                    double freq = ScanDouble();
+                    arr[0][i] = freq;
+                    summ += arr[0][i];
                 }
                 if (summ == 1)
                 {
                     flag = true;
-                    
+
                 }
                 else
                 {
@@ -93,6 +109,15 @@ namespace PracticeEx7
                 }
             } while (!flag);
             ArraySort(arr);
+            for (int i = 1; i < arr.Length; i++)
+            {
+                for (int j = 0; j < arr[i].Length; j++)
+                {
+                    arr[i][j] = arr[i - 1][j];
+                    arr[i][arr[i].Length - 1] = arr[i - 1][arr[i-1].Length - 1] + arr[i - 1][arr[i-1].Length - 2];
+                }
+                ArraySort(arr);
+            }
             ShowArr(arr);
         }
     }
