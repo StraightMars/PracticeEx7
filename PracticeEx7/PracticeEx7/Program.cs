@@ -6,82 +6,70 @@ using System.Threading.Tasks;
 
 namespace PracticeEx7
 {
-    public class Tree
+    public class Tree : IComparable
     {
         public double data;
         public Tree left, right;
+        public string word;
         public override string ToString()
         {
-            return data.ToString();
+            return "tree" + this.data;
         }
         public Tree(double value)
         {
-            data = value;
-            left = null;
-            right = null;
-        }
-        public static Tree MakeAPoint(double value)
-        {
-            Tree nPoint = new Tree(value);
-            return nPoint;
-        }
-        public static int GetSize(int length)
-        {
-            int size = length + (length - 1);
-            return size;
-        }
-        public static CreateATree(double head, double[][] arr)
-        {
-            Tree root = MakeAPoint(head);
-            for (int j = arr.Length - 2; j > -1; j--)
-            {
-                for (int i = arr[j].Length - 1; i > arr[j].Length - 3; i--)
-                {
-
-                }
-            }
-
+            this.data = value;
         }
         public void ShowTree(int indent)
         {
-            if (left != null)
-                left.ShowTree(indent + 3);
+            if (this.left != null)
+                this.left.ShowTree(indent + 3);
             Console.WriteLine(new string(' ', indent) + ToString());
-            if (right != null)
-                right.ShowTree(indent + 3);
+            if (this.right != null)
+                this.right.ShowTree(indent + 3);
+        }
+        public int CompareTo(object obj)
+        {
+            Tree tree = obj as Tree;
+            if (this.data < tree.data)
+                return -1;
+            if (this.data > tree.data)
+                return 1;
+            else
+                return 0;
+        }
+    }
+    class Words
+    {
+        public static List<string> list;
+        public static void GetWords(Tree tree, string letters = "")
+        {
+            if (tree.right == null && tree.left == null)
+            {
+                tree.word = letters;
+                list.Add(letters);
+            }
+            if (tree.right != null)
+                GetWords(tree.right, letters + "0");
+            if (tree.left != null)
+                GetWords(tree.left, letters + "1");
+        }
+        public static List<string> getWords(Tree tree)
+        {
+            list = new List<string>();
+            GetWords(tree);
+            return list;
         }
     }
     class Program
     {
-        static double[][] ArraySort(double[][] arr)
+        static double GetSum(List<double> list)
         {
-            for (int j = 0; j < arr.Length; j++)
+            double sum = 0;
+            foreach (double elem in list)
             {
-                for (int i = 0; i < arr[j].Length; i++)
-                {
-                    double temp;
-                    for (int k = i + 1; k < arr[j].Length; k++)
-                    {
-                        if (arr[i][j] < arr[k][j])
-                        {
-                            temp = arr[i][j];
-                            arr[i][j] = arr[k][j];
-                            arr[k][j] = temp;
-                        }
-                    }
-                }
+                sum += elem;
             }
-            return arr;
-        }
-        static void ShowArr(double[][] arr)
-        {
-            Console.WriteLine("Указанные частоты: ");
-            for (int i = 0; i < arr.Length; i++)
-            {
-                for (int j = 0; j < arr[i].Length; j++)
-                    Console.Write("{0, 7}", arr[i][j]);
-                Console.Write("\n");
-            }
+            return sum;
         }
         static double ScanDouble()
         {
@@ -105,63 +93,68 @@ namespace PracticeEx7
             } while (!ok);
             return buf;
         }
+        static string StringReverse(string s)
+        {
+            char[] ch = s.ToCharArray();
+            for (int i = 0; i < ch.Length / 2; i++)
+            {
+                char tmp = ch[ch.Length - i - 1];
+                ch[ch.Length - i - 1] = ch[i];
+                ch[i] = tmp;
+            }
+            s = new string(ch);
+            return s;
+        }
         static void Main(string[] args)
         {
-            bool flag = false;
-            bool ok;
-            int N;
-            Console.WriteLine("Введите количество букв в алфавите: ");
-            do
+            List<double> list = new List<double>();
+            Console.WriteLine("Вводите частоты букв по порядку через Enter.\nКогда сумма частот достигнет единицы, ввод прекратится.");
+            while (true)
             {
-                ok = Int32.TryParse(Console.ReadLine(), out N);
-                if (!ok)
-                    Console.WriteLine("Ошибка! Введите натуральное число!");
-                if (N <= 0)
+                double elem = ScanDouble();
+                list.Add(elem);
+                double sum = GetSum(list);
+                if (sum > 1)
                 {
-                    Console.WriteLine("Ошибка! Введите натуральное число!");
-                    ok = false;
+                    Console.WriteLine("Ошибка ввода! Сумма частот не должна превышать 1. Повторите ввод с самого начала.");
+                    list = new List<double>();
                 }
-            } while (!ok);
-            double[][] arr = new double[N][];
-            for (int i = 0; i < N; i++)
-            {
-                int columns = N - i;
-                arr[i] = new double[columns];
+                if (sum == 1)
+                    break;
             }
-            do
+            Console.WriteLine("Отсортированные введенные частоты: ");
+            list.Sort();
+            list.Reverse();
+            foreach (double elem in list)
+                Console.WriteLine(elem);
+            List<Tree> treeList = new List<Tree>();
+            for (int i = 0; i < list.Count; i++)
             {
-                Console.WriteLine("Введите частоты букв по порядку, через Enter: ");
-                double summ = 0;
-                for (int i = 0; i < N; i++)
-                {
-                    double freq = ScanDouble();
-                    arr[i][0] = freq;
-                    summ += arr[i][0];
-                }
-                if (summ == 1)
-                {
-                    flag = true;
-
-                }
-                else
-                {
-                    Console.WriteLine("Сумма всех частот должна равняться единице! Повторите ввод с самого начала.");
-                    flag = false;
-                }
-            } while (!flag);
-            ArraySort(arr);
-            for (int j = 1; j < arr.Length; j++)
-            {
-                for (int i = 0; i < arr[j].Length; i++)
-                {
-                    arr[i][j] = arr[i][j-1];
-                    arr[arr[j].Length - 1][j] = arr[i + 1][j - 1] + arr[i][j - 1];
-                }
-                ArraySort(arr);
+                treeList.Add(new Tree(list[i]));
             }
-            Console.WriteLine("Таблица для построения дерева: ");
-            ShowArr(arr);
-
+            while (treeList.Count > 1)
+            {
+                treeList.Sort();
+                Tree first = treeList[0];
+                Tree second = treeList[1];
+                treeList[1] = new Tree(first.data + second.data);
+                treeList[1].right = first;
+                treeList[1].left = second;
+                treeList.RemoveAt(0);
+            }
+            List<string> codes = Words.getWords(treeList[0]);
+            Console.WriteLine("Полученный результат: ");
+            for (int i = 0; i < codes.Count; i++)
+            {
+                string reversed = StringReverse(codes[i]);
+                codes[i] = reversed;
+            }
+            codes.Sort();
+            foreach (string elem in codes)
+            {
+                Console.WriteLine(elem);
+            }
+            Console.ReadLine();
         }
     }
 }
